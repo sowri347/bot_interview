@@ -33,6 +33,7 @@ def transcribe(
 @router.post("/evaluate")
 def evaluate(
     transcript: str = Form(...),
+    question_text: str = Form(None),
     current_candidate: Candidate = Depends(get_current_candidate),
     db: Session = Depends(get_db)
 ):
@@ -40,9 +41,9 @@ def evaluate(
     Evaluate transcript using Gemini API
     Returns score (1-10) and 2-line feedback
     Requires candidate authentication
-    Accepts transcript as form data or query parameter
+    Accepts transcript and question_text as form data
     """
-    return evaluate_answer(db, str(current_candidate.id), transcript)
+    return evaluate_answer(db, str(current_candidate.id), transcript, question_text)
 
 
 

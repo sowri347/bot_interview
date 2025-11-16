@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../hooks/useApi';
+import Navbar from '../shared/Navbar';
 import { ROUTES } from '../../utils/constants';
 
 const CreateInterview = () => {
@@ -80,8 +81,13 @@ const CreateInterview = () => {
   };
 
   return (
-    <div className="container">
-      <h1 className="text-white text-2xl font-bold mb-5">Create New Interview</h1>
+    <div className="min-h-screen bg-dark-bg">
+      <Navbar />
+      <div className="container">
+      <div className="mb-8">
+        <h1 className="text-white mb-2">Create New Interview</h1>
+        <p className="text-gray-400 text-sm">Set up a new interview with questions for candidates</p>
+      </div>
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -159,6 +165,7 @@ const CreateInterview = () => {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 };

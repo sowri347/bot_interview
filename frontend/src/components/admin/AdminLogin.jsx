@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../hooks/useApi';
+import Navbar from '../shared/Navbar';
 import { setAdminToken } from '../../utils/auth';
 import { ROUTES } from '../../utils/constants';
 
@@ -38,9 +39,14 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-dark-bg">
-      <div className="card w-full max-w-md">
-        <h1 className="mb-5 text-center text-white text-2xl font-bold">Admin Login</h1>
+    <div className="min-h-screen bg-dark-bg">
+      <Navbar />
+      <div className="flex justify-center items-center min-h-[calc(100vh-4rem)] px-4">
+        <div className="card w-full max-w-md animate-fade-in">
+        <div className="text-center mb-8">
+          <h1 className="text-white mb-2">Admin Login</h1>
+          <p className="text-gray-400 text-sm">Sign in to manage interviews</p>
+        </div>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -69,12 +75,13 @@ const AdminLogin = () => {
 
           <button 
             type="submit" 
-            className="btn btn-primary w-full" 
+            className="btn btn-primary w-full mt-2" 
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Logging in...' : 'Sign In'}
           </button>
         </form>
+        </div>
       </div>
     </div>
   );

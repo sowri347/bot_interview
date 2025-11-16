@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../hooks/useApi';
+import Navbar from '../shared/Navbar';
 import { ROUTES } from '../../utils/constants';
 
 const InterviewDashboard = () => {
@@ -32,6 +33,26 @@ const InterviewDashboard = () => {
     navigate(`/admin/report/${candidateId}`);
   };
 
+  const handleDownloadExcel = async () => {
+    try {
+      const response = await api.get(`/admin/interview/${id}/download-excel`, {
+        responseType: 'blob',
+      });
+      
+      // Create blob URL and trigger download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `interview_report_${id}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to download Excel file');
+    }
+  };
+
   if (loading) {
     return <div className="container text-white">Loading...</div>;
   }
@@ -45,19 +66,42 @@ const InterviewDashboard = () => {
   }
 
   return (
-    <div className="container">
+    <div className="min-h-screen bg-dark-bg">
+      <Navbar />
+      <div className="container">
       <div className="mb-5">
         <button className="btn btn-secondary" onClick={() => navigate(ROUTES.ADMIN_DASHBOARD)}>
           ← Back to Dashboard
         </button>
       </div>
 
-      <h1 className="text-white text-2xl font-bold">{dashboard.interview_title}</h1>
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-white mb-2">{dashboard.interview_title}</h1>
+            <p className="text-gray-400 text-sm">View candidate performance and statistics</p>
+          </div>
+          <button
+            onClick={handleDownloadExcel}
+            className="btn btn-primary"
+          >
+            Download Report (Excel)
+          </button>
+        </div>
+      </div>
 
-      <div className="card mb-5">
-        <h3 className="text-white text-lg font-semibold mb-2">Statistics</h3>
-        <p className="text-white mb-1"><strong>Total Candidates:</strong> {dashboard.total_candidates}</p>
-        <p className="text-white"><strong>Total Questions:</strong> {dashboard.total_questions}</p>
+      <div className="card mb-8">
+        <h3 className="text-white text-lg font-semibold mb-4">Statistics</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 bg-dark-input rounded-none border border-dark-border">
+            <p className="text-gray-400 text-sm font-medium mb-1">Total Candidates</p>
+            <p className="text-white text-2xl font-bold">{dashboard.total_candidates}</p>
+          </div>
+          <div className="p-4 bg-dark-input rounded-none border border-dark-border">
+            <p className="text-gray-400 text-sm font-medium mb-1">Total Questions</p>
+            <p className="text-white text-2xl font-bold">{dashboard.total_questions}</p>
+          </div>
+        </div>
       </div>
 
       <h2 className="text-white text-xl font-semibold mb-4">Candidates</h2>
@@ -68,7 +112,14 @@ const InterviewDashboard = () => {
         </div>
       ) : (
         <div>
-          {dashboard.candidates.map((candidate) => (
+          {[...dashboard.candidates]
+            .sort((a, b) => {
+              // Sort by average score (highest first)
+              const scoreA = a.average_score ?? 0;
+              const scoreB = b.average_score ?? 0;
+              return scoreB - scoreA;
+            })
+            .map((candidate) => (
             <div key={candidate.candidate_id} className="card">
               <div className="flex justify-between items-center">
                 <div>
@@ -90,6 +141,7 @@ const InterviewDashboard = () => {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 };

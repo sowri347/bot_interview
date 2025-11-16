@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../hooks/useApi';
+import Navbar from '../shared/Navbar';
 import { setAdminToken } from '../../utils/auth';
 import { ROUTES } from '../../utils/constants';
 
@@ -52,16 +53,18 @@ const AdminSignup = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-dark-bg relative">
-      <div className="card w-full max-w-md relative z-10">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-black text-2xl font-bold">
+    <div className="min-h-screen bg-dark-bg">
+      <Navbar />
+      <div className="flex justify-center items-center min-h-[calc(100vh-4rem)] px-4">
+        <div className="card w-full max-w-md animate-fade-in">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-4 mb-6">
+            <div className="w-14 h-14 bg-gradient-to-br from-accent-green to-accent-green/80 rounded-none flex items-center justify-center text-black text-2xl font-bold shadow-glow-sm">
               A
             </div>
-            <h1 className="m-0 text-3xl text-white font-bold">AI INTERVIEW BOT</h1>
+            <h1 className="m-0 text-3xl text-white font-bold tracking-tight">AI INTERVIEW BOT</h1>
           </div>
-          <p className="text-gray-300 text-sm uppercase tracking-wider">
+          <p className="text-gray-400 text-sm uppercase tracking-widest font-medium">
             Create Admin Account
           </p>
         </div>
@@ -127,6 +130,7 @@ const AdminSignup = () => {
             </p>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

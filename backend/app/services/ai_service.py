@@ -75,12 +75,13 @@ def transcribe_audio(audio_data: bytes) -> str:
         raise Exception(f"Whisper transcription failed: {str(e)}")
 
 
-def evaluate_text(transcript: str) -> Tuple[int, str]:
+def evaluate_text(transcript: str, question_text: str = None) -> Tuple[int, str]:
     """
     Evaluate transcript using Gemini API and return score (1-10) and 2-line feedback
     
     Args:
         transcript: The transcribed text to evaluate
+        question_text: The question text for context (optional)
     
     Returns:
         Tuple of (score: int, feedback: str)
@@ -94,10 +95,25 @@ def evaluate_text(transcript: str) -> Tuple[int, str]:
         # Initialize Gemini model
         # Using gemini-1.5-flash (faster and free) or gemini-1.5-pro (better quality)
         # gemini-pro is deprecated, use gemini-1.5-flash or gemini-1.5-pro instead
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.0-flash')
         
         # Create evaluation prompt
-        prompt = f"""Evaluate the following interview answer and provide:
+        if question_text:
+            prompt = f"""Evaluate the following interview answer based on the question and provide:
+1. A score from 1 to 10 (where 10 is excellent and demonstrates a thorough, accurate, and well-structured response)
+2. Two lines of constructive feedback
+
+Question:
+"{question_text}"
+
+Answer to evaluate:
+"{transcript}"
+
+Please evaluate how well the answer addresses the question, its accuracy, completeness, and clarity. Respond in this exact format:
+SCORE: [number from 1-10]
+FEEDBACK: [two lines of feedback, each on a new line]"""
+        else:
+            prompt = f"""Evaluate the following interview answer and provide:
 1. A score from 1 to 10 (where 10 is excellent)
 2. Two lines of constructive feedback
 

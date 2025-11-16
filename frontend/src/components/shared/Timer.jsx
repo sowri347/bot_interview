@@ -11,13 +11,13 @@ const Timer = ({ timeRemaining, label = 'Time remaining' }) => {
   };
 
   return (
-    <div className={`text-2xl font-bold text-center p-5 rounded-lg my-5 text-white ${
+    <div className={`text-center p-8 rounded-none my-6 text-white transition-all duration-300 border-2 ${
       timeRemaining <= 10 
-        ? 'bg-error-red-dark border border-error-red' 
-        : 'bg-accent-green-dark border border-accent-green'
+        ? 'bg-error-red-dark/50 border-error-red/50 shadow-lg shadow-error-red/20' 
+        : 'bg-accent-green-dark/50 border-accent-green/50 shadow-lg shadow-accent-green/20'
     }`}>
-      <div className="text-white">{label}</div>
-      <div className="text-5xl mt-2.5 text-white">
+      <div className="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-3">{label}</div>
+      <div className="text-6xl md:text-7xl font-bold mt-2 text-white tabular-nums">
         {formatTime(timeRemaining)}
       </div>
     </div>

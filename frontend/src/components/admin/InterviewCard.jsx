@@ -13,11 +13,15 @@ const InterviewCard = ({ interview }) => {
   };
 
   return (
-    <div className="card cursor-pointer hover:border-accent-green transition-colors" onClick={handleViewDashboard}>
-      <h3 className="mb-2.5 text-white text-lg font-semibold">{interview.title}</h3>
-      {interview.description && (
-        <p className="text-gray-300 mb-2.5">{interview.description}</p>
-      )}
+    <div className="card cursor-pointer hover:border-accent-green/50 transition-all duration-200 group" onClick={handleViewDashboard}>
+      <div className="flex justify-between items-start gap-4 mb-4">
+        <div className="flex-1">
+          <h3 className="text-white text-xl font-semibold mb-2 group-hover:text-accent-green transition-colors">{interview.title}</h3>
+          {interview.description && (
+            <p className="text-gray-400 text-sm leading-relaxed">{interview.description}</p>
+          )}
+        </div>
+      </div>
       {interview.shareable_link && (
         <div className="mb-2.5">
           <strong className="text-white">Link:</strong>{' '}

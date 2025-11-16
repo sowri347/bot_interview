@@ -10,6 +10,7 @@ import InterviewDashboard from './components/admin/InterviewDashboard';
 import ViewReport from './components/admin/ViewReport';
 import CandidateLogin from './components/candidate/CandidateLogin';
 import InterviewScreen from './components/candidate/InterviewScreen';
+import About from './components/About';
 import { getAdminToken, getCandidateToken } from './utils/auth';
 
 // Protected route component for admin
@@ -63,7 +64,8 @@ function App() {
           }
         />
 
-        {/* Public Interview Route */}
+        {/* Public Routes */}
+        <Route path="/about" element={<About />} />
         <Route path="/interview/:linkId" element={<CandidateLogin />} />
 
         {/* Candidate Routes */}

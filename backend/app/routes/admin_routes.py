@@ -2,6 +2,7 @@
 Admin API routes
 """
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
@@ -18,7 +19,8 @@ from app.controllers.admin_controller import (
     get_all_interviews,
     get_interview_dashboard,
     get_interview_candidates,
-    get_candidate_report
+    get_candidate_report,
+    generate_interview_excel
 )
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -86,6 +88,27 @@ def get_interviews(
     Requires admin authentication
     """
     return get_all_interviews(db)
+
+
+@router.get("/interview/{interview_id}/download-excel")
+def download_interview_excel(
+    interview_id: str,
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """
+    Download interview report as Excel file
+    Requires admin authentication
+    """
+    excel_buffer = generate_interview_excel(db, interview_id)
+    
+    return StreamingResponse(
+        excel_buffer,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": f"attachment; filename=interview_report_{interview_id}.xlsx"
+        }
+    )
 
 
 @router.get("/interview/{interview_id}/dashboard", response_model=DashboardResponse)

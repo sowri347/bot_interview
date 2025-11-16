@@ -63,14 +63,19 @@ const CandidateLogin = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-dark-bg">
-      <div className="card w-full max-w-lg">
-        <h1 className="mb-2.5 text-white text-2xl font-bold">{interview.title}</h1>
-        {interview.description && (
-          <p className="mb-5 text-gray-300">{interview.description}</p>
-        )}
+    <div className="flex justify-center items-center min-h-screen bg-dark-bg px-4">
+      <div className="card w-full max-w-lg animate-fade-in">
+        <div className="mb-8">
+          <h1 className="text-white mb-3">{interview.title}</h1>
+          {interview.description && (
+            <p className="text-gray-400 leading-relaxed">{interview.description}</p>
+          )}
+        </div>
 
-        <h2 className="mb-5 text-white text-xl font-semibold">Register for Interview</h2>
+        <div className="mb-6">
+          <h2 className="text-white text-xl font-semibold mb-1">Register for Interview</h2>
+          <p className="text-gray-400 text-sm">Fill in your details to get started</p>
+        </div>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">

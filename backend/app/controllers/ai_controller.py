@@ -42,7 +42,8 @@ def transcribe_audio_file(
 def evaluate_answer(
     db: Session,
     candidate_id: str,
-    transcript: str
+    transcript: str,
+    question_text: str = None
 ) -> dict:
     """
     Evaluate transcript using Gemini API
@@ -51,6 +52,7 @@ def evaluate_answer(
         db: Database session
         candidate_id: Candidate ID (from token)
         transcript: Transcribed text
+        question_text: The question text for context (optional)
     
     Returns:
         Dictionary with score and feedback
@@ -59,7 +61,7 @@ def evaluate_answer(
         HTTPException: If evaluation fails
     """
     try:
-        score, feedback = evaluate_text(transcript)
+        score, feedback = evaluate_text(transcript, question_text)
         return {
             "score": score,
             "feedback": feedback

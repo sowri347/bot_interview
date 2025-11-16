@@ -1,100 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  * {
+    @apply antialiased;
+  }
+
   body {
     @apply bg-dark-bg text-white min-h-screen;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+    letter-spacing: -0.02em;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
   }
 
   code {
-    @apply bg-dark-card text-white px-1.5 py-0.5 rounded;
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    @apply bg-dark-card text-white px-1.5 py-0.5 rounded text-sm;
+    font-family: 'Fira Code', 'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New',
       monospace;
   }
 }
 
 @layer components {
   .container {
-    @apply max-w-6xl mx-auto px-5 py-5;
+    @apply max-w-7xl mx-auto px-6 py-8 md:px-8;
   }
 
   .btn {
-    @apply px-5 py-2.5 rounded-lg cursor-pointer text-base font-medium transition-all duration-300;
+    @apply px-6 py-3 rounded-none cursor-pointer text-sm font-semibold transition-all duration-200;
+    @apply shadow-lg hover:shadow-xl active:scale-[0.98];
+    letter-spacing: 0.01em;
   }
 
   .btn-primary {
-    @apply bg-white text-black border border-white;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    @apply bg-gray-200 text-black;
+    @apply bg-white text-black border-0;
+    @apply hover:bg-gray-100 active:bg-gray-200;
   }
 
   .btn-primary:disabled {
-    @apply bg-dark-border text-gray-500 cursor-not-allowed border-dark-border;
+    @apply bg-dark-border text-gray-500 cursor-not-allowed shadow-none hover:shadow-none;
   }
 
   .btn-secondary {
     @apply bg-dark-border text-white border border-gray-600;
-  }
-
-  .btn-secondary:hover:not(:disabled) {
-    @apply bg-gray-600 text-white;
+    @apply hover:bg-gray-700 hover:border-gray-500;
   }
 
   .btn-secondary:disabled {
-    @apply bg-dark-card text-gray-500 cursor-not-allowed border-dark-card;
+    @apply bg-dark-card text-gray-500 cursor-not-allowed border-dark-card shadow-none hover:shadow-none;
   }
 
   .form-group {
-    @apply mb-5;
+    @apply mb-6;
   }
 
   .form-group label {
-    @apply block mb-1.5 font-bold text-white;
+    @apply block mb-2.5 font-semibold text-white text-sm;
+    @apply tracking-wide uppercase;
+    letter-spacing: 0.05em;
   }
 
   .form-group input,
   .form-group textarea {
-    @apply w-full px-2.5 py-2.5 border border-gray-600 rounded-lg text-base bg-dark-input text-white;
-  }
-
-  .form-group input:focus,
-  .form-group textarea:focus {
-    @apply outline-none border-white bg-dark-input-focus;
+    @apply w-full px-4 py-3.5 border border-gray-600 rounded-none text-base;
+    @apply bg-dark-input text-white placeholder:text-gray-500;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-accent-green/30 focus:border-accent-green;
+    @apply focus:bg-dark-input-focus;
   }
 
   .form-group input:disabled,
   .form-group textarea:disabled {
-    @apply bg-black text-gray-500 cursor-not-allowed;
-  }
-
-  .form-group input::placeholder,
-  .form-group textarea::placeholder {
-    @apply text-gray-500;
+    @apply bg-black/30 text-gray-500 cursor-not-allowed opacity-60;
   }
 
   .form-group textarea {
-    @apply min-h-[100px] resize-y;
+    @apply min-h-[120px] resize-y;
   }
 
   .card {
-    @apply bg-dark-card border border-dark-border rounded-lg p-5 mb-5 text-white;
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+    @apply bg-dark-card border border-dark-border rounded-none p-6 md:p-8 mb-6 text-white;
+    @apply shadow-2xl backdrop-blur-sm;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(16, 185, 129, 0.1);
+  }
+
+  .card:hover {
+    @apply border-gray-600;
+    transition: border-color 0.2s ease;
   }
 
   .error {
-    @apply text-error-red mt-2.5 p-2.5 bg-error-red-dark border border-error-red rounded-lg;
+    @apply text-error-red mt-3 p-4 bg-error-red-dark/50 border border-error-red/50 rounded-none;
+    @apply backdrop-blur-sm;
   }
 
   .success {
-    @apply text-accent-green mt-2.5 p-2.5 bg-accent-green-dark border border-accent-green rounded-lg;
+    @apply text-accent-green mt-3 p-4 bg-accent-green-dark/50 border border-accent-green/50 rounded-none;
+    @apply backdrop-blur-sm;
   }
 }
 
