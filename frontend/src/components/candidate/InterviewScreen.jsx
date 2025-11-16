@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../hooks/useApi';
 import QuestionScreen from './QuestionScreen';
+import { getCandidateToken } from '../../utils/auth'; // Add import
 
 const InterviewScreen = () => {
   const { linkId } = useParams();
@@ -19,11 +20,26 @@ const InterviewScreen = () => {
   }, [linkId]);
 
   const fetchInterview = async () => {
+    // Debug: Check if token exists
+    const token = getCandidateToken();
+    console.log('Token in InterviewScreen:', token ? token.substring(0, 50) + '...' : 'NO TOKEN');
+    
     try {
       const response = await api.post('/candidate/start');
       setInterview(response.data);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to load interview');
+      console.error('Error fetching interview:', err);
+      console.error('Error response:', err.response?.data);
+      if (err.response?.status === 401) {
+        // Token expired or invalid - redirect back to registration
+        setError('Session expired. Please register again.');
+        // Redirect to registration page after a short delay
+        setTimeout(() => {
+          navigate(`/interview/${linkId}`);
+        }, 2000);
+      } else {
+        setError(err.response?.data?.detail || 'Failed to load interview');
+      }
     } finally {
       setLoading(false);
     }
