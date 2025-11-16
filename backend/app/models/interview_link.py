@@ -15,7 +15,6 @@ class InterviewLink(Base):
     
     interview_id = Column(UUID(as_uuid=True), ForeignKey("interviews.id", ondelete="CASCADE"), primary_key=True)
     link_code = Column(String(255), unique=True, nullable=False, index=True)
-    candidate_password_hash = Column(String(255), nullable=True)  # Store hashed candidate password for validation
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships

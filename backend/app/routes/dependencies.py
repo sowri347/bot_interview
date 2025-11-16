@@ -64,41 +64,59 @@ def get_current_candidate(
 ) -> Candidate:
     """
     Dependency to get current authenticated candidate from JWT token
-    
-    Args:
-        credentials: HTTP Bearer token credentials
-        db: Database session
-    
-    Returns:
-        Candidate model instance
-    
-    Raises:
-        HTTPException: If token is invalid or candidate not found
     """
     token = credentials.credentials
     
+   
+    
     try:
         payload = decode_token(token)
-        candidate_id = payload.get("sub")
+       
+        
+        candidate_id_str = payload.get("sub")
         token_type = payload.get("type")
         
-        if not candidate_id or token_type != "candidate":
+     
+        
+        if not candidate_id_str or token_type != "candidate":
+         
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid authentication token"
             )
         
+        # Convert string UUID to UUID object for querying
+        import uuid
+        try:
+            candidate_id = uuid.UUID(candidate_id_str)
+           
+        except (ValueError, TypeError) as e:
+            
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid candidate ID format"
+            )
+        
         candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
+    
+        
         if not candidate:
+         
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Candidate not found"
             )
         
+        
         return candidate
+    except HTTPException:
+        raise
     except Exception as e:
+       
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials"
+            detail=f"Could not validate credentials: {str(e)}"
         )
 

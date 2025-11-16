@@ -16,6 +16,20 @@ export const useAutoRecorder = (autoStart = true) => {
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
   const timerRef = useRef(null);
+  const isRecordingRef = useRef(false); // Add ref to track recording state
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && isRecordingRef.current) {
+      mediaRecorderRef.current.stop();
+      isRecordingRef.current = false;
+      setIsRecording(false);
+      
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+  }, []); // Remove isRecording from dependencies
 
   const startRecording = useCallback(async () => {
     try {
@@ -41,6 +55,7 @@ export const useAutoRecorder = (autoStart = true) => {
       mediaRecorder.onstop = () => {
         const blob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
         setAudioBlob(blob);
+        isRecordingRef.current = false;
         setIsRecording(false);
         
         // Stop all tracks
@@ -51,6 +66,7 @@ export const useAutoRecorder = (autoStart = true) => {
 
       // Start recording
       mediaRecorder.start();
+      isRecordingRef.current = true;
       setIsRecording(true);
       setTimeRemaining(RECORDING_DURATION);
 
@@ -58,7 +74,7 @@ export const useAutoRecorder = (autoStart = true) => {
       timerRef.current = setInterval(() => {
         setTimeRemaining((prev) => {
           if (prev <= 1) {
-            stopRecording();
+            stopRecording(); // Now this will work correctly
             return 0;
           }
           return prev - 1;
@@ -69,19 +85,7 @@ export const useAutoRecorder = (autoStart = true) => {
       setError(`Failed to start recording: ${err.message}`);
       console.error('Recording error:', err);
     }
-  }, []);
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    }
-  }, [isRecording]);
+  }, [stopRecording]); // Add stopRecording as dependency
 
   // Auto-start on mount if autoStart is true
   useEffect(() => {
@@ -93,15 +97,16 @@ export const useAutoRecorder = (autoStart = true) => {
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+        timerRef.current = null;
       }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
-      if (mediaRecorderRef.current && isRecording) {
+      if (mediaRecorderRef.current && isRecordingRef.current) {
         mediaRecorderRef.current.stop();
       }
     };
-  }, [autoStart]); // Only run on mount/unmount
+  }, [autoStart, startRecording]); // Add startRecording as dependency
 
   return {
     isRecording,

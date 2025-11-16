@@ -10,8 +10,7 @@ class CandidateRegister(BaseModel):
     """Candidate registration request schema"""
     name: str
     email: EmailStr
-    interview_password: str
-    link_code: str  # The shareable link code
+    link_code: str  # Removed interview_password field
 
 
 class CandidateStart(BaseModel):

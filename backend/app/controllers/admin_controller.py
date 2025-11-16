@@ -8,18 +8,69 @@ from app.models.interview import Interview
 from app.models.candidate import Candidate
 from app.models.answer import Answer
 from app.models.question import Question
-from app.schemas.admin import AdminLoginRequest, AdminLoginResponse
+from app.models.interview_link import InterviewLink
+from app.schemas.admin import AdminSignupRequest, AdminLoginRequest, AdminLoginResponse
 from app.schemas.interview import InterviewCreate, InterviewResponse, InterviewListResponse
 from app.schemas.answer import DashboardResponse, ReportResponse, CandidateDetail, CandidateAnswerDetail
 from app.services.auth_service import (
     verify_password,
+    get_password_hash,
     create_access_token,
     get_admin_by_email
 )
 from app.services.interview_service import create_interview_with_link
 from app.services.email_service import send_interview_invitation
-from typing import List
+from typing import List, Optional
 from datetime import datetime
+import json
+
+
+def signup_admin(db: Session, signup_data: AdminSignupRequest) -> AdminLoginResponse:
+    """
+    Create a new admin account and return JWT token
+    
+    Args:
+        db: Database session
+        signup_data: Signup credentials (email and password)
+    
+    Returns:
+        AdminLoginResponse with JWT token
+    
+    Raises:
+        HTTPException: If email already exists
+    """
+    # Check if admin with this email already exists
+    existing_admin = get_admin_by_email(db, signup_data.email)
+    if existing_admin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Create new admin
+    password_hash = get_password_hash(signup_data.password)
+    new_admin = Admin(
+        email=signup_data.email,
+        password_hash=password_hash
+    )
+    
+    db.add(new_admin)
+    db.commit()
+    db.refresh(new_admin)
+    
+    # Create JWT token
+    token_data = {
+        "sub": str(new_admin.id),
+        "email": new_admin.email,
+        "type": "admin"
+    }
+    access_token = create_access_token(data=token_data)
+    
+    return AdminLoginResponse(
+        access_token=access_token,
+        admin_id=str(new_admin.id),
+        email=new_admin.email
+    )
 
 
 def login_admin(db: Session, login_data: AdminLoginRequest) -> AdminLoginResponse:
@@ -65,7 +116,7 @@ def create_interview(
     base_url: str = "http://localhost:5173"
 ) -> InterviewResponse:
     """
-    Create a new interview with shareable link and candidate password
+    Create a new interview with shareable link
     
     Args:
         db: Database session
@@ -73,9 +124,9 @@ def create_interview(
         base_url: Base URL for generating shareable links
     
     Returns:
-        InterviewResponse with shareable link and password
+        InterviewResponse with shareable link
     """
-    interview, link_code, candidate_password = create_interview_with_link(
+    interview, link_code = create_interview_with_link(  # No password returned
         db=db,
         title=interview_data.title,
         description=interview_data.description
@@ -85,10 +136,8 @@ def create_interview(
     shareable_link = f"{base_url}/interview/{link_code}"
     
     # Simulate sending email (logs to console)
-    # In production, this would send actual emails to candidates
     print(f"\n[EMAIL SIMULATION] Interview created:")
-    print(f"  Link: {shareable_link}")
-    print(f"  Password: {candidate_password}\n")
+    print(f"  Link: {shareable_link}\n")
     
     return InterviewResponse(
         id=str(interview.id),
@@ -96,7 +145,7 @@ def create_interview(
         description=interview.description,
         created_at=interview.created_at,
         shareable_link=shareable_link,
-        candidate_password=candidate_password
+        candidate_password=None  # No password
     )
 
 
@@ -156,6 +205,7 @@ def get_all_interviews(db: Session) -> InterviewListResponse:
     
     interview_responses = []
     for interview in interviews:
+        print(f"Interview ID: {interview.id}, Title: {interview.title}, Description: {interview.description}, Created: {interview.created_at}")
         # Get shareable link if exists
         shareable_link = None
         if interview.interview_link:
@@ -166,7 +216,9 @@ def get_all_interviews(db: Session) -> InterviewListResponse:
             title=interview.title,
             description=interview.description,
             created_at=interview.created_at,
-            shareable_link=shareable_link
+            shareable_link=shareable_link,
+            
+            
         ))
     
     return InterviewListResponse(

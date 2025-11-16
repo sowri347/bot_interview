@@ -4,6 +4,12 @@ Admin-related Pydantic schemas
 from pydantic import BaseModel, EmailStr
 
 
+class AdminSignupRequest(BaseModel):
+    """Admin signup request schema"""
+    email: EmailStr
+    password: str
+
+
 class AdminLoginRequest(BaseModel):
     """Admin login request schema"""
     email: EmailStr
