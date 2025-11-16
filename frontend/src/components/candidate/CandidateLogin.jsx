@@ -57,26 +57,20 @@ const CandidateLogin = () => {
   if (!interview) {
     return (
       <div className="container">
-        {error ? <div className="error">{error}</div> : <div>Loading...</div>}
+        {error ? <div className="error">{error}</div> : <div className="text-white">Loading...</div>}
       </div>
     );
   }
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: '100vh',
-      backgroundColor: '#f5f5f5'
-    }}>
-      <div className="card" style={{ width: '500px' }}>
-        <h1 style={{ marginBottom: '10px' }}>{interview.title}</h1>
+    <div className="flex justify-center items-center min-h-screen bg-dark-bg">
+      <div className="card w-full max-w-lg">
+        <h1 className="mb-2.5 text-white text-2xl font-bold">{interview.title}</h1>
         {interview.description && (
-          <p style={{ marginBottom: '20px', color: '#666' }}>{interview.description}</p>
+          <p className="mb-5 text-gray-300">{interview.description}</p>
         )}
 
-        <h2 style={{ marginBottom: '20px' }}>Register for Interview</h2>
+        <h2 className="mb-5 text-white text-xl font-semibold">Register for Interview</h2>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -106,8 +100,7 @@ const CandidateLogin = () => {
 
           <button 
             type="submit" 
-            className="btn btn-primary" 
-            style={{ width: '100%' }}
+            className="btn btn-primary w-full" 
             disabled={loading}
           >
             {loading ? 'Registering...' : 'Start Interview'}

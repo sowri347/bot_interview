@@ -11,17 +11,13 @@ const Timer = ({ timeRemaining, label = 'Time remaining' }) => {
   };
 
   return (
-    <div style={{ 
-      fontSize: '24px', 
-      fontWeight: 'bold', 
-      textAlign: 'center',
-      padding: '20px',
-      backgroundColor: timeRemaining <= 10 ? '#ffcccc' : '#e8f5e9',
-      borderRadius: '8px',
-      margin: '20px 0'
-    }}>
-      <div>{label}</div>
-      <div style={{ fontSize: '48px', marginTop: '10px' }}>
+    <div className={`text-2xl font-bold text-center p-5 rounded-lg my-5 text-white ${
+      timeRemaining <= 10 
+        ? 'bg-error-red-dark border border-error-red' 
+        : 'bg-accent-green-dark border border-accent-green'
+    }`}>
+      <div className="text-white">{label}</div>
+      <div className="text-5xl mt-2.5 text-white">
         {formatTime(timeRemaining)}
       </div>
     </div>

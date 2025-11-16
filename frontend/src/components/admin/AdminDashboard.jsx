@@ -33,13 +33,13 @@ const AdminDashboard = () => {
   };
 
   if (loading) {
-    return <div className="container">Loading...</div>;
+    return <div className="container text-white">Loading...</div>;
   }
 
   return (
     <div className="container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1>Admin Dashboard</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-white text-2xl font-bold">Admin Dashboard</h1>
         <button className="btn btn-primary" onClick={handleCreateInterview}>
           Create New Interview
         </button>
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
 
       {error && <div className="error">{error}</div>}
 
-      <div style={{ marginBottom: '20px' }}>
+      <div className="mb-5 text-white">
         <strong>Total Interviews:</strong> {interviews.length}
       </div>
 

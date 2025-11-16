@@ -38,15 +38,9 @@ const AdminLogin = () => {
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: '100vh',
-      backgroundColor: '#f5f5f5'
-    }}>
-      <div className="card" style={{ width: '400px' }}>
-        <h1 style={{ marginBottom: '20px', textAlign: 'center' }}>Admin Login</h1>
+    <div className="flex justify-center items-center min-h-screen bg-dark-bg">
+      <div className="card w-full max-w-md">
+        <h1 className="mb-5 text-center text-white text-2xl font-bold">Admin Login</h1>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -75,8 +69,7 @@ const AdminLogin = () => {
 
           <button 
             type="submit" 
-            className="btn btn-primary" 
-            style={{ width: '100%' }}
+            className="btn btn-primary w-full" 
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}

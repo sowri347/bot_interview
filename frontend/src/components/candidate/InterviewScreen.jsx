@@ -57,7 +57,7 @@ const InterviewScreen = () => {
   };
 
   if (loading) {
-    return <div className="container">Loading interview...</div>;
+    return <div className="container text-white">Loading interview...</div>;
   }
 
   if (error) {

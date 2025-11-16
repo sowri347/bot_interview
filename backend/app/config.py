@@ -7,7 +7,6 @@ class Settings(BaseSettings):
     # required
     DATABASE_URL: str
     JWT_SECRET: str
-    WHISPER_API_KEY: str
     GEMINI_API_KEY: str
 
     # CORS can be provided as:

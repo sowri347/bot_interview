@@ -81,7 +81,7 @@ const CreateInterview = () => {
 
   return (
     <div className="container">
-      <h1>Create New Interview</h1>
+      <h1 className="text-white text-2xl font-bold mb-5">Create New Interview</h1>
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -105,7 +105,7 @@ const CreateInterview = () => {
         </div>
 
         <div className="form-group">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <div className="flex justify-between items-center mb-2.5">
             <label>Questions *</label>
             <button
               type="button"
@@ -118,7 +118,7 @@ const CreateInterview = () => {
           </div>
 
           {questions.map((question, index) => (
-            <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+            <div key={index} className="flex gap-2.5 mb-2.5">
               <input
                 type="text"
                 value={question}
@@ -126,7 +126,7 @@ const CreateInterview = () => {
                 placeholder={`Question ${index + 1}`}
                 required={index === 0}
                 disabled={loading}
-                style={{ flex: 1 }}
+                className="flex-1"
               />
               {questions.length > 1 && (
                 <button
@@ -145,7 +145,7 @@ const CreateInterview = () => {
         {error && <div className="error">{error}</div>}
         {success && <div className="success">{success}</div>}
 
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div className="flex gap-2.5">
           <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? 'Creating...' : 'Create Interview'}
           </button>

@@ -13,19 +13,20 @@ const InterviewCard = ({ interview }) => {
   };
 
   return (
-    <div className="card" style={{ cursor: 'pointer' }} onClick={handleViewDashboard}>
-      <h3 style={{ marginBottom: '10px' }}>{interview.title}</h3>
+    <div className="card cursor-pointer hover:border-accent-green transition-colors" onClick={handleViewDashboard}>
+      <h3 className="mb-2.5 text-white text-lg font-semibold">{interview.title}</h3>
       {interview.description && (
-        <p style={{ color: '#666', marginBottom: '10px' }}>{interview.description}</p>
+        <p className="text-gray-300 mb-2.5">{interview.description}</p>
       )}
       {interview.shareable_link && (
-        <div style={{ marginBottom: '10px' }}>
-          <strong>Link:</strong>{' '}
+        <div className="mb-2.5">
+          <strong className="text-white">Link:</strong>{' '}
           <a 
             href={interview.shareable_link} 
             target="_blank" 
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
+            className="text-accent-green hover:text-accent-green/80 underline"
           >
             {interview.shareable_link}
           </a>

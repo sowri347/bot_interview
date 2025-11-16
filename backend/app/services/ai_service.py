@@ -3,13 +3,18 @@ AI service for Whisper (speech-to-text) and Gemini (text evaluation)
 """
 import base64
 import io
+import tempfile
+import os
 from typing import Tuple, Optional
-from openai import OpenAI
+from faster_whisper import WhisperModel
 import google.generativeai as genai
 from app.config import settings
 
-# Initialize OpenAI client for Whisper
-openai_client = OpenAI(api_key=settings.WHISPER_API_KEY)
+# Initialize Whisper model (runs locally, no API key needed)
+# Using "base" model - you can change to "tiny", "small", "medium", "large" for better accuracy
+# "base" is a good balance between speed and accuracy
+# Note: First run will download the model (~150MB), subsequent runs use cached model
+whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
 
 # Initialize Gemini
 genai.configure(api_key=settings.GEMINI_API_KEY)
@@ -17,10 +22,11 @@ genai.configure(api_key=settings.GEMINI_API_KEY)
 
 def transcribe_audio(audio_data: bytes) -> str:
     """
-    Transcribe audio using Whisper API
+    Transcribe audio using local Whisper model (free, no API needed)
     
     Args:
-        audio_data: Audio file bytes (WAV, MP3, etc.)
+        audio_data: Audio file bytes (WAV, MP3, M4A, FLAC, etc.)
+                   faster-whisper supports many formats via ffmpeg
     
     Returns:
         Transcribed text string
@@ -29,18 +35,42 @@ def transcribe_audio(audio_data: bytes) -> str:
         Exception: If transcription fails
     """
     try:
-        # Create a file-like object from bytes
-        audio_file = io.BytesIO(audio_data)
-        audio_file.name = "audio.wav"  # Whisper needs a filename
+        # Create a temporary file to store audio data
+        # faster-whisper uses ffmpeg internally, so it can handle various formats
+        # We'll use a generic temp file and let faster-whisper detect the format
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".tmp") as temp_file:
+            temp_file.write(audio_data)
+            temp_file_path = temp_file.name
         
-        # Call Whisper API
-        transcript = openai_client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file,
-            response_format="text"
-        )
-        
-        return transcript if isinstance(transcript, str) else str(transcript)
+        try:
+            # Transcribe using faster-whisper
+            # faster-whisper automatically handles audio format conversion via ffmpeg
+            segments, info = whisper_model.transcribe(
+                temp_file_path,
+                beam_size=5,
+                language="en",  # Set to None for auto-detection of language
+                vad_filter=True,  # Voice Activity Detection - filters out silence
+                vad_parameters=dict(min_silence_duration_ms=500)
+            )
+            
+            # Combine all segments into a single transcript
+            transcript_parts = []
+            for segment in segments:
+                transcript_parts.append(segment.text.strip())
+            
+            transcript = " ".join(transcript_parts).strip()
+            
+            # Return empty string if no transcription
+            return transcript if transcript else ""
+            
+        finally:
+            # Clean up temporary file
+            if os.path.exists(temp_file_path):
+                try:
+                    os.unlink(temp_file_path)
+                except OSError:
+                    pass  # Ignore errors during cleanup
+                
     except Exception as e:
         raise Exception(f"Whisper transcription failed: {str(e)}")
 
@@ -62,7 +92,9 @@ def evaluate_text(transcript: str) -> Tuple[int, str]:
     """
     try:
         # Initialize Gemini model
-        model = genai.GenerativeModel('gemini-pro')
+        # Using gemini-1.5-flash (faster and free) or gemini-1.5-pro (better quality)
+        # gemini-pro is deprecated, use gemini-1.5-flash or gemini-1.5-pro instead
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         # Create evaluation prompt
         prompt = f"""Evaluate the following interview answer and provide:
