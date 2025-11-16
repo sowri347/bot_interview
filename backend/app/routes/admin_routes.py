@@ -7,10 +7,11 @@ from typing import List
 from app.database import get_db
 from app.routes.dependencies import get_current_admin
 from app.models.admin import Admin
-from app.schemas.admin import AdminLoginRequest, AdminLoginResponse
+from app.schemas.admin import AdminSignupRequest, AdminLoginRequest, AdminLoginResponse
 from app.schemas.interview import InterviewCreate, InterviewResponse, InterviewListResponse
 from app.schemas.answer import DashboardResponse, ReportResponse
 from app.controllers.admin_controller import (
+    signup_admin,
     login_admin,
     create_interview,
     add_question_to_interview,
@@ -21,6 +22,18 @@ from app.controllers.admin_controller import (
 )
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+@router.post("/signup", response_model=AdminLoginResponse)
+def admin_signup(
+    signup_data: AdminSignupRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Admin signup endpoint
+    Creates a new admin account and returns JWT token
+    """
+    return signup_admin(db, signup_data)
 
 
 @router.post("/login", response_model=AdminLoginResponse)

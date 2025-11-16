@@ -16,19 +16,13 @@ def generate_link_code() -> str:
     return secrets.token_urlsafe(12)
 
 
-def generate_candidate_password() -> str:
-    """Generate a random candidate password"""
-    # Generate a 8-character alphanumeric password
-    return secrets.token_urlsafe(8)[:8]
-
-
 def create_interview_with_link(
     db: Session,
     title: str,
     description: str = None
-) -> tuple[Interview, str, str]:
+) -> tuple[Interview, str]:  # Changed return type - no password
     """
-    Create an interview and generate shareable link and candidate password
+    Create an interview and generate shareable link
     
     Args:
         db: Database session
@@ -36,34 +30,27 @@ def create_interview_with_link(
         description: Interview description
     
     Returns:
-        Tuple of (Interview, link_code, candidate_password)
+        Tuple of (Interview, link_code)
     """
-    from app.services.auth_service import get_password_hash
-    
     # Create interview
     interview = Interview(title=title, description=description)
     db.add(interview)
     db.flush()  # Flush to get the interview ID
     
-    # Generate link code and candidate password
+    # Generate link code only (no password)
     link_code = generate_link_code()
-    candidate_password = generate_candidate_password()
     
-    # Hash the candidate password for storage
-    password_hash = get_password_hash(candidate_password)
-    
-    # Create interview link with password hash
+    # Create interview link without password
     interview_link = InterviewLink(
         interview_id=interview.id,
-        link_code=link_code,
-        candidate_password_hash=password_hash
+        link_code=link_code
     )
     db.add(interview_link)
     
     db.commit()
     db.refresh(interview)
     
-    return interview, link_code, candidate_password
+    return interview, link_code  # Return only interview and link_code
 
 
 def get_interview_by_link_code(db: Session, link_code: str) -> Interview:

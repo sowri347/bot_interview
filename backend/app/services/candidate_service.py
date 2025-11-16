@@ -14,8 +14,7 @@ def register_candidate(
     db: Session,
     name: str,
     email: str,
-    interview_password: str,
-    link_code: str
+    link_code: str  # Removed interview_password parameter
 ) -> tuple[Candidate, Interview]:
     """
     Register a candidate for an interview
@@ -24,29 +23,24 @@ def register_candidate(
         db: Database session
         name: Candidate name
         email: Candidate email
-        interview_password: Interview password provided by candidate
         link_code: Shareable link code
     
     Returns:
         Tuple of (Candidate, Interview)
     
     Raises:
-        ValueError: If link code is invalid or password is incorrect
+        ValueError: If link code is invalid
     """
     # Get interview by link code
     interview = get_interview_by_link_code(db, link_code)
     if not interview:
         raise ValueError("Invalid interview link")
     
-    # Get interview link to validate password
+    # No password validation needed - just check if link exists
     from app.models.interview_link import InterviewLink
     interview_link = db.query(InterviewLink).filter(InterviewLink.link_code == link_code).first()
-    if not interview_link or not interview_link.candidate_password_hash:
+    if not interview_link:
         raise ValueError("Invalid interview link")
-    
-    # Verify password against stored hash
-    if not verify_password(interview_password, interview_link.candidate_password_hash):
-        raise ValueError("Invalid interview password")
     
     # Create candidate
     candidate = Candidate(
@@ -57,14 +51,8 @@ def register_candidate(
     db.add(candidate)
     db.flush()
     
-    # Hash and store password
-    password_hash = get_password_hash(interview_password)
-    candidate_auth = CandidateAuth(
-        candidate_id=candidate.id,
-        interview_id=interview.id,
-        password_hash=password_hash
-    )
-    db.add(candidate_auth)
+    # No candidate_auth needed if you're removing passwords entirely
+    # Or keep it if candidates still need to login later with their own password
     
     db.commit()
     db.refresh(candidate)

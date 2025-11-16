@@ -39,7 +39,6 @@ const CandidateLogin = () => {
       const response = await api.post('/candidate/register', {
         name,
         email,
-        interview_password: password,
         link_code: linkId,
       });
 
@@ -102,18 +101,7 @@ const CandidateLogin = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label>Interview Password *</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-              placeholder="Enter the password provided by the interviewer"
-            />
-          </div>
-
+          
           {error && <div className="error">{error}</div>}
 
           <button 

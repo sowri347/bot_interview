@@ -77,7 +77,6 @@ def register_candidate_for_interview(
             db=db,
             name=registration_data.name,
             email=registration_data.email,
-            interview_password=registration_data.interview_password,
             link_code=registration_data.link_code
         )
         

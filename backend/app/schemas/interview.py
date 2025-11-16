@@ -25,7 +25,7 @@ class InterviewResponse(BaseModel):
     description: Optional[str]
     created_at: datetime
     shareable_link: Optional[str] = None
-    candidate_password: Optional[str] = None
+    candidate_password: Optional[str] = None  
     
     class Config:
         from_attributes = True
